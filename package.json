@@ -1,0 +1,36 @@
+{
+  "name": "@fsavio/docs-br",
+  "version": "0.0.1",
+  "description": "Biblioteca de validação e extração de informação de documentos oficial brasileiros. ",
+  "main": "dist/index.js",
+  "scripts": {
+    "clear": "rm -rf ./dist",
+    "build:types": "tsc",
+    "build": "npm run clear && npm run build:types && node scripts/build.mjs",
+    "test": "vitest run",
+    "prepublishOnly": "npm test",
+    "preversion": "npm test",
+    "postversion": "git push && git push --tags"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fernandosavio/docs-br-js.git"
+  },
+  "keywords": [
+    "cnpj",
+    "cpf",
+    "validation",
+    "validação"
+  ],
+  "author": "Fernando Sávio",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/fernandosavio/docs-br-js/issues"
+  },
+  "homepage": "https://github.com/fernandosavio/docs-br-js#readme",
+  "devDependencies": {
+    "esbuild": "0.21.5",
+    "typescript": "5.5.2",
+    "vitest": "^1.6.0"
+  }
+}
