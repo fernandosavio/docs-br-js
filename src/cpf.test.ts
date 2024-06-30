@@ -1,5 +1,5 @@
 import { describe, it, assert } from "vitest";
-import { validate, calculateCheckDigits, generate } from './cpf'
+import { validate, calculateCheckDigits, generate, extractInfo, CpfString } from './cpf'
 
 describe('cpf.validate tests', () => {
   it.each([
@@ -11,6 +11,21 @@ describe('cpf.validate tests', () => {
   ])('should be valid ($value)', ({ value }) => {
     const result = validate(value);
     assert.isTrue(result.sucesso);
+  });
+});
+
+describe('cpf.extractInfo tests', () => {
+  it.each([
+    { value: '43378073225', formattedValue: '433.780.732-25', regiao: '2', },
+    { value: '23555427750', formattedValue: '235.554.277-50', regiao: '7', },
+    { value: '16357377708', formattedValue: '163.573.777-08', regiao: '7', },
+    { value: '86177235999', formattedValue: '861.772.359-99', regiao: '9', },
+    { value: '40516172700', formattedValue: '405.161.727-00', regiao: '7', },
+  ])('should extract info ($value)', ({ value, formattedValue, regiao }) => {
+    const result = extractInfo(value as CpfString);
+    assert.strictEqual(result.valor, value);
+    assert.strictEqual(result.valorFormatado, formattedValue);
+    assert.isTrue(result.regiaoFiscal.nome.startsWith(regiao + 'ª'));
   });
 });
 

@@ -1,7 +1,7 @@
 {
   "name": "@fsavio/docs-br",
   "version": "0.0.1",
-  "description": "Biblioteca de validação e extração de informação de documentos oficiais brasileiros. ",
+  "description": "Biblioteca de validação e extração de informação de documentos oficiais brasileiros.",
   "main": "dist/index.js",
   "scripts": {
     "clear": "rm -rf ./dist",
@@ -22,7 +22,7 @@
     "validation",
     "validação",
     "cpf-generation",
-    "cnpj-generation",
+    "cnpj-generation"
   ],
   "author": "Fernando Sávio",
   "license": "MIT",

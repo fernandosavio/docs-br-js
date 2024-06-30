@@ -1,7 +1,7 @@
 import { describe, it, assert } from "vitest";
-import { validate, calculateCheckDigits, generate } from './cnpj'
+import { validate, calculateCheckDigits, generate, CnpjString, extractInfo } from './cnpj'
 
-describe('validateCnpj tests', () => {
+describe('cnpj.validate tests', () => {
   it.each([
     { value: '48217216000130' },
     { value: '72138217000173' },
@@ -14,7 +14,22 @@ describe('validateCnpj tests', () => {
   });
 });
 
-describe('calculateCheckDigits tests', () => {
+describe('cnpj.extractInfo tests', () => {
+  it.each([
+    { value: '48217216000130', formattedValue: '48.217.216/0001-30' },
+    { value: '72138217000173', formattedValue: '72.138.217/0001-73' },
+    { value: '77877055000109', formattedValue: '77.877.055/0001-09' },
+    { value: '64069201000128', formattedValue: '64.069.201/0001-28' },
+    { value: '13144351000118', formattedValue: '13.144.351/0001-18' },
+  ])('should be valid', ({ value, formattedValue }) => {
+    const result = extractInfo(value as CnpjString);
+    assert.strictEqual(result.valor, value);
+    assert.strictEqual(result.valorFormatado, formattedValue);
+
+  });
+});
+
+describe('cnpj.calculateCheckDigits tests', () => {
   it.each([
     { value: '482172160001', expected: [3, 0] },
     { value: '721382170001', expected: [7, 3] },
@@ -29,7 +44,7 @@ describe('calculateCheckDigits tests', () => {
   });
 });
 
-describe('generateRandomCnpj tests', () => {
+describe('cnpj.generate tests', () => {
   it.each([
     { options: undefined },
     { options: {} },

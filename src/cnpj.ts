@@ -11,6 +11,12 @@ export enum CnpjErrors {
   INVALID_CHECK_DIGITS = 'invalid-check-digits'
 };
 
+type CnpjInfo = {
+  valor: CnpjString;
+  valorFormatado: string;
+};
+
+
 const oldPattern = /^\d{14}$/;
 const newPattern = /^[\dA-Z]{12}\d{2}$/;
 const getValueFromChar = (char: string): number => char.charCodeAt(0) - 48;
@@ -96,5 +102,16 @@ export function generate(options?: GenerateOptions): CnpjString {
   if (result.sucesso === false) { throw new Error(); }
   const [dv1, dv2] = result.dados;
   return (numbers + dv1 + dv2) as CnpjString;
+}
+
+function format(value: CnpjString): string {
+  return `${value.slice(0, 2)}.${value.slice(2, 5)}.${value.slice(5, 8)}/${value.slice(8, 12)}-${value.slice(12, 14)}`;
+}
+
+export function extractInfo(value: CnpjString): CnpjInfo {
+  return {
+    valor: value,
+    valorFormatado: format(value),
+  }
 }
 
