@@ -3,6 +3,11 @@
   "version": "0.0.1",
   "description": "Biblioteca de validação e extração de informação de documentos oficiais brasileiros.",
   "main": "dist/index.js",
+  "module": "dist/index.esm.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/*"
+  ],
   "scripts": {
     "clear": "rm -rf ./dist",
     "build:types": "tsc",
