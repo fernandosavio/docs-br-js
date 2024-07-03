@@ -2,7 +2,7 @@ import { createErrorResult, createSuccessResult, generateRandomString, IterCycle
 
 export type CnpjString = string & { readonly __tag: unique symbol };
 
-export enum CnpjErrors {
+export enum Errors {
   /** String deve ter 14 caracteres */
   INVALID_LENGTH = 'invalid-length',
   /** Caracteres inválidos recebidos no input (apenas números no padrão antigo e números e letras maiúsculas no novo) */
@@ -39,26 +39,26 @@ function calculateDV(value: number[]): number {
   return (dv > 9) ? 0 : dv;
 }
 
-export function validate(value: string, options?: validateOptions): Result<CnpjString, CnpjErrors> {
+export function validate(value: string, options?: validateOptions): Result<CnpjString, Errors> {
   if (value.length !== 14) {
-    return createErrorResult(CnpjErrors.INVALID_LENGTH);
+    return createErrorResult(Errors.INVALID_LENGTH);
   }
   const validationPattern = options?.onlyNumbers ? oldPattern : newPattern;
   
   if (!validationPattern.test(value)) {
-    return createErrorResult(CnpjErrors.INVALID_CHARS);
+    return createErrorResult(Errors.INVALID_CHARS);
   }
 
   const originalNumbers = value.split('').map(getValueFromChar);
 
   let dv = calculateDV(originalNumbers.slice(0, 12))
   if (getValueFromChar(value[12]) !== dv) {
-    return createErrorResult(CnpjErrors.INVALID_CHECK_DIGITS);
+    return createErrorResult(Errors.INVALID_CHECK_DIGITS);
   }
 
   dv = calculateDV(originalNumbers.slice(0, 13))
   if (getValueFromChar(value[13]) !== dv) {
-    return createErrorResult(CnpjErrors.INVALID_CHECK_DIGITS);
+    return createErrorResult(Errors.INVALID_CHECK_DIGITS);
   }
 
   return createSuccessResult(value as CnpjString);
@@ -66,13 +66,13 @@ export function validate(value: string, options?: validateOptions): Result<CnpjS
 
 const patternWithoutDVs = /^[\dA-Z]{12}$/;
 
-export function calculateCheckDigits(value: string): Result<[number, number], CnpjErrors> {
+export function calculateCheckDigits(value: string): Result<[number, number], Errors> {
   if (value.length !== 12) {
-    return createErrorResult(CnpjErrors.INVALID_LENGTH);
+    return createErrorResult(Errors.INVALID_LENGTH);
   }
 
   if (!patternWithoutDVs.test(value)) {
-    return createErrorResult(CnpjErrors.INVALID_CHARS);
+    return createErrorResult(Errors.INVALID_CHARS);
   }
 
   const originalNumbers = value.split('').map(getValueFromChar);

@@ -34,7 +34,7 @@ type CpfInfo = {
 /**
  * Erros que podem ocorrer na validação de CPF
  */
-export enum CpfErrors {
+export enum Errors {
   /** String deve ter 11 caracteres */
   INVALID_LENGTH = 'invalid-length',
   /** Caracteres inválidos recebidos no input (são aceitos apenas números) */
@@ -56,25 +56,25 @@ function calculateDV(value: number[]): number {
  * Valida se o input é um CPF com dígitos verificadores válidos.
  * O input deve conter apenas números.
  */
-export function validate(value: string): Result<CpfString, CpfErrors> {
+export function validate(value: string): Result<CpfString, Errors> {
   if (value.length !== 11) {
-    return createErrorResult(CpfErrors.INVALID_LENGTH);
+    return createErrorResult(Errors.INVALID_LENGTH);
   }
 
   if (!onlyNumbersPattern.test(value)) {
-    return createErrorResult(CpfErrors.INVALID_CHARS);
+    return createErrorResult(Errors.INVALID_CHARS);
   }
 
   const originalNumbers = value.split('').map(getValueFromChar);
 
   let dv = calculateDV(originalNumbers.slice(0, 9))
   if (getValueFromChar(value[9]) !== dv) {
-    return createErrorResult(CpfErrors.INVALID_CHECK_DIGITS);
+    return createErrorResult(Errors.INVALID_CHECK_DIGITS);
   }
 
   dv = calculateDV(originalNumbers.slice(0, 10))
   if (getValueFromChar(value[10]) !== dv) {
-    return createErrorResult(CpfErrors.INVALID_CHECK_DIGITS);
+    return createErrorResult(Errors.INVALID_CHECK_DIGITS);
   }
 
   return createSuccessResult(value as CpfString);
@@ -86,13 +86,13 @@ const patternWithoutDVs = /^\d{9}$/;
  * Dada uma string numérica de 9 caracteres, calcula quais dígitos verificadores 
  * correspondem a um CPF válido.
  */
-export function calculateCheckDigits(value: string): Result<[number, number], CpfErrors> {
+export function calculateCheckDigits(value: string): Result<[number, number], Errors> {
   if (value.length !== 9) {
-    return createErrorResult(CpfErrors.INVALID_LENGTH);
+    return createErrorResult(Errors.INVALID_LENGTH);
   }
 
   if (!patternWithoutDVs.test(value)) {
-    return createErrorResult(CpfErrors.INVALID_CHARS);
+    return createErrorResult(Errors.INVALID_CHARS);
   }
 
   const originalNumbers = value.split('').map(getValueFromChar);
