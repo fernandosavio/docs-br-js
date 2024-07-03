@@ -1,5 +1,6 @@
 import { describe, it, assert } from "vitest";
 import { validate, calculateCheckDigits, generate, extractInfo, CpfString } from './cpf'
+import { UF } from "./common";
 
 describe('cpf.validate tests', () => {
   it.each([
@@ -52,6 +53,42 @@ describe('cpf.generate tests', () => {
       const result = validate(randomValue);
       assert.isTrue(result.sucesso);
     }
+  });
+
+  it.each([
+    { uf: 'DF', digit: '1' },
+    { uf: 'GO', digit: '1' },
+    { uf: 'MT', digit: '1' },
+    { uf: 'MS', digit: '1' },
+    { uf: 'TO', digit: '1' },
+    { uf: 'AC', digit: '2' },
+    { uf: 'AP', digit: '2' },
+    { uf: 'AM', digit: '2' },
+    { uf: 'PA', digit: '2' },
+    { uf: 'RO', digit: '2' },
+    { uf: 'RR', digit: '2' },
+    { uf: 'CE', digit: '3' },
+    { uf: 'MA', digit: '3' },
+    { uf: 'PI', digit: '3' },
+    { uf: 'AL', digit: '4' },
+    { uf: 'PB', digit: '4' },
+    { uf: 'PE', digit: '4' },
+    { uf: 'RN', digit: '4' },
+    { uf: 'BA', digit: '5' },
+    { uf: 'SE', digit: '5' },
+    { uf: 'MG', digit: '6' },
+    { uf: 'ES', digit: '7' },
+    { uf: 'RJ', digit: '7' },
+    { uf: 'SP', digit: '8' },
+    { uf: 'PR', digit: '9' },
+    { uf: 'SC', digit: '9' },
+    { uf: 'RS', digit: '0' },
+  ] as Array<{ uf: keyof typeof UF, digit: string}>)('CPF from $uf must have the 9th digit \'$digit\'', ({uf, digit }) => {
+      const randomValue = generate({ uf: uf });
+      assert.lengthOf(randomValue, 11);
+      assert.strictEqual(randomValue[8], digit);
+      const result = validate(randomValue);
+      assert.isTrue(result.sucesso);
   });
 });
 

@@ -80,7 +80,6 @@ export const enum UF {
   AM ='AM',
   BA ='BA',
   CE ='CE',
-  /** Distrito Federal */
   DF ='DF',
   ES ='ES',
   GO ='GO',

@@ -1,58 +1,39 @@
 import { createErrorResult, createSuccessResult, generateRandomString, Result, UF } from "./common";
 
+/**
+ * Tipo que representa uma string com um CPF válido.
+ */
 export type CpfString = string & { readonly __tag: unique symbol };
 
-
 const RegiaoFiscalEnum = {
-  '1': {
-    nome: '1ª Região Fiscal',
-    estados: [UF.DF, UF.GO, UF.MT, UF.MS, UF.TO],
-  },
-  '2': {
-    nome: '2ª Região Fiscal',
-    estados: [UF.AC, UF.AP, UF.AM, UF.PA, UF.RO, UF.RR],
-  },
-  '3': {
-    nome: '3ª Região Fiscal',
-    estados: [UF.CE, UF.MA, UF.PI],
-  },
-  '4': {
-    nome: '4ª Região Fiscal',
-    estados: [UF.AL, UF.PB, UF.PE, UF.RN],
-  },
-  '5': {
-    nome: '5ª Região Fiscal',
-    estados: [UF.BA, UF.SE],
-  },
-  '6': {
-    nome: '6ª Região Fiscal',
-    estados: [UF.MG],
-  },
-  '7': {
-    nome: '7ª Região Fiscal',
-    estados: [UF.ES, UF.RJ],
-  },
-  '8': {
-    nome: '8ª Região Fiscal',
-    estados: [UF.SP],
-  },
-  '9': {
-    nome: '9ª Região Fiscal',
-    estados: [UF.PR, UF.SC],
-  },
-  '0': {
-    nome: '10ª Região Fiscal',
-    estados: [UF.RS],
-  },
+  '1': { nome: '1ª Região Fiscal', estados: [UF.DF, UF.GO, UF.MT, UF.MS, UF.TO] },
+  '2': { nome: '2ª Região Fiscal', estados: [UF.AC, UF.AP, UF.AM, UF.PA, UF.RO, UF.RR] },
+  '3': { nome: '3ª Região Fiscal', estados: [UF.CE, UF.MA, UF.PI] },
+  '4': { nome: '4ª Região Fiscal', estados: [UF.AL, UF.PB, UF.PE, UF.RN] },
+  '5': { nome: '5ª Região Fiscal', estados: [UF.BA, UF.SE] },
+  '6': { nome: '6ª Região Fiscal', estados: [UF.MG] },
+  '7': { nome: '7ª Região Fiscal', estados: [UF.ES, UF.RJ] },
+  '8': { nome: '8ª Região Fiscal', estados: [UF.SP] },
+  '9': { nome: '9ª Região Fiscal', estados: [UF.PR, UF.SC] },
+  '0': { nome: '10ª Região Fiscal', estados: [UF.RS] },
 } as const;
 type RegiaoFiscal = typeof RegiaoFiscalEnum[keyof typeof RegiaoFiscalEnum]
 
+/**
+ * Informações extraídas de um CPF.
+ */
 type CpfInfo = {
+  /** Valor numérico do CPF validado */
   valor: CpfString;
+  /** Valor formatado com pontuações */
   valorFormatado: string;
+  /** Região fiscal onde o CPF foi emitido */
   regiaoFiscal: RegiaoFiscal,
 };
 
+/**
+ * Erros que podem ocorrer na validação de CPF
+ */
 export enum CpfErrors {
   /** String deve ter 11 caracteres */
   INVALID_LENGTH = 'invalid-length',
@@ -71,6 +52,10 @@ function calculateDV(value: number[]): number {
   return (dv > 9) ? 0 : dv;
 }
 
+/**
+ * Valida se o input é um CPF com dígitos verificadores válidos.
+ * O input deve conter apenas números.
+ */
 export function validate(value: string): Result<CpfString, CpfErrors> {
   if (value.length !== 11) {
     return createErrorResult(CpfErrors.INVALID_LENGTH);
@@ -97,6 +82,10 @@ export function validate(value: string): Result<CpfString, CpfErrors> {
 
 const patternWithoutDVs = /^\d{9}$/;
 
+/**
+ * Dada uma string numérica de 9 caracteres, calcula quais dígitos verificadores 
+ * correspondem a um CPF válido.
+ */
 export function calculateCheckDigits(value: string): Result<[number, number], CpfErrors> {
   if (value.length !== 9) {
     return createErrorResult(CpfErrors.INVALID_LENGTH);
@@ -118,8 +107,26 @@ export function calculateCheckDigits(value: string): Result<[number, number], Cp
 
 const numbersChars = '1234567890';
 
-export function generate(): CpfString {
-  let numbers = generateRandomString(9, numbersChars);
+const ufToRegiao: Record<UF, string> = Object.create(null);
+Object.entries(RegiaoFiscalEnum).forEach(([key, value]) => {
+  value.estados.forEach(uf => { ufToRegiao[uf] = key });
+});
+
+type GenerateOptions = { uf?: keyof typeof UF };
+
+/**
+ * Gera um CPF aleatório e válido. Opcionalmente, pode-se escolher de qual estado o CPF vai ser.
+ */
+export function generate(options?: GenerateOptions): CpfString {
+  const uf = options?.uf ?? null;
+  let numbers: string;
+
+  if (uf) {
+    numbers = generateRandomString(8, numbersChars) + ufToRegiao[uf];
+  } else {
+    numbers = generateRandomString(9, numbersChars);
+  }
+  
   const result = calculateCheckDigits(numbers);
   if (result.sucesso === false) { throw new Error('Internal error'); }
   const [dv1, dv2] = result.dados;
@@ -130,6 +137,9 @@ function format(value: CpfString): string {
   return `${value.slice(0, 3)}.${value.slice(3, 6)}.${value.slice(6, 9)}-${value.slice(9, 11)}`;
 }
 
+/**
+ * Extrai informações de um CPF válido.
+ */
 export function extractInfo(value: CpfString): CpfInfo {
   return {
     valor: value,

@@ -14,6 +14,9 @@ export enum CnpjErrors {
 type CnpjInfo = {
   valor: CnpjString;
   valorFormatado: string;
+  raiz: string,
+  filial: string,
+  digitosVerificadores: string,
 };
 
 
@@ -112,6 +115,9 @@ export function extractInfo(value: CnpjString): CnpjInfo {
   return {
     valor: value,
     valorFormatado: format(value),
+    raiz: value.slice(0, 8),
+    filial: value.slice(8, 12),
+    digitosVerificadores: value.slice(12, 14),
   }
 }
 
