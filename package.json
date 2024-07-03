@@ -1,6 +1,6 @@
 {
   "name": "@fsavio/docs-br",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Biblioteca de validação e extração de informação de documentos oficiais brasileiros.",
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
